@@ -1,0 +1,3 @@
+[bugzilla]
+host = bugzilla.mozilla.org
+key = YourBugzillaApiKey # https://bugzilla.mozilla.org/userprefs.cgi?tab=apikey
