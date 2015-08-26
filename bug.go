@@ -28,3 +28,20 @@ type BugsApiResponse struct {
 }
 
 type Bugs []Bug
+
+type DependsOnAppender struct {
+  Add []int `json:"ids"`
+}
+
+type Comment struct {
+  Body string `json:"body"`
+  IsPrivate bool `json:"is_private"`
+  IsMarkdown bool `json:"is_markdown"`
+}
+
+type ReOpenChildMessage struct {
+  Ids []int `json:"ids"`
+  Status string `json:"status"`
+  DependsOn DependsOnAppender `json:"depends_on"`
+  Comment Comment `json:"comment"`
+}

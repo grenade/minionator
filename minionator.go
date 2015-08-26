@@ -1,9 +1,11 @@
 package main
 
 import (
+  "github.com/fatih/color"
   "gopkg.in/gcfg.v1"
   "fmt"
   "log"
+  "strconv"
 )
 
 func main() {
@@ -12,6 +14,30 @@ func main() {
   if err != nil {
     log.Fatal(err)
   }
-  bug := GetBug("b-2008-ix-0034", cfg)
-  fmt.Printf("%+v\n", bug)
+  parent := GetBug(strconv.Itoa(cfg.Bugzilla.Parent), cfg)
+  if parent.Id == cfg.Bugzilla.Parent {
+    for _, alias := range cfg.Bugzilla.Child {
+      child := GetBug(alias, cfg)
+      if child.Alias == alias {
+        fmt.Printf("bug %v found for %v\n", child.Id, child.Alias)
+        if Contains(cfg.Bugzilla.Parent, child.DependsOn) {
+          color.Blue(" - is linked to parent %v", cfg.Bugzilla.Parent)
+        } else {
+          color.Yellow(" - not linked to parent %v", cfg.Bugzilla.Parent)
+        }
+      } else {
+        color.Yellow("no bug found for %v", alias)
+        //todo: create the bug
+      }
+    }
+  }
+}
+
+func Contains(needle int, haystack []int) bool {
+  for _, straw := range haystack {
+    if straw == needle {
+      return true
+    }
+  }
+  return false
 }
