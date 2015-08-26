@@ -2,3 +2,5 @@ sudo: false
 language: go
 go:
   - tip
+install: go get -t -v ./...
+script: go build -v
