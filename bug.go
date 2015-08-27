@@ -45,3 +45,10 @@ type ReOpenChildMessage struct {
   DependsOn DependsOnAppender `json:"depends_on"`
   Comment Comment `json:"comment"`
 }
+
+type CloseChildMessage struct {
+  Ids []int `json:"ids"`
+  Status string `json:"status"`
+  Resolution string `json:"resolution"`
+  Comment Comment `json:"comment"`
+}

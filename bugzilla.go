@@ -79,3 +79,44 @@ func SetDepends(blocker int, depends int, comment string, cfg Config) bool {
   color.Red("response Body: %v", string(body))
   return false
 }
+
+func Resolve(blocker int, depends int, comment string, cfg Config) bool {
+  bzUrl := fmt.Sprint("https://", cfg.Bugzilla.Host, "/rest/bug/", depends, "?api_key=", cfg.Bugzilla.Key)
+  message := CloseChildMessage {
+    []int { depends },
+    "RESOLVED",
+    "FIXED",
+    Comment { comment, false, false } }
+  payload, err := json.Marshal(message)
+  if err != nil {
+    log.Fatal(err)
+  }
+  req, err := http.NewRequest("PUT", bzUrl, bytes.NewBuffer(payload))
+  if err != nil {
+    log.Fatal(err)
+  }
+  req.Header.Set("Content-Type", "application/json")
+  req.Header.Set("Accept", "application/json")
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer resp.Body.Close()
+  body, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    log.Fatal(err)
+  }
+  if resp.StatusCode == 200 {
+    var bugsApiResponse BugsApiResponse
+    err = json.Unmarshal(body, &bugsApiResponse)
+    if err != nil {
+      log.Fatal(err)
+    }
+    return true
+  }
+  color.Red("response Status: %v", resp.Status)
+  color.Red("response Headers: %v", resp.Header)
+  color.Red("response Body: %v", string(body))
+  return false
+}
