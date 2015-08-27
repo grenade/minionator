@@ -1,3 +1,5 @@
 [bugzilla]
 host = bugzilla.mozilla.org
 key = YourBugzillaApiKey # https://bugzilla.mozilla.org/userprefs.cgi?tab=apikey
+parent = 999 # blocking parent bug id goes here
+child = x-2008-ix-0001 # dependent child bug alias goes here

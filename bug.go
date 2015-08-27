@@ -30,7 +30,7 @@ type BugsApiResponse struct {
 type Bugs []Bug
 
 type DependsOnAppender struct {
-  Add []int `json:"ids"`
+  Add []int `json:"add"`
 }
 
 type Comment struct {

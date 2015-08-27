@@ -25,6 +25,11 @@ func main() {
         } else {
           color.Yellow(" - not linked to parent %v", cfg.Bugzilla.Parent)
         }
+        if !child.IsOpen {
+          if SetDepends(parent.Id, child.Id, fmt.Sprint("allocated to bug ", parent.Id), cfg) {
+            color.Green(" - reopened %v (%v) and linked to parent %v", child.Id, child.Alias, parent.Id)
+          }
+        }
       } else {
         color.Yellow("no bug found for %v", alias)
         //todo: create the bug

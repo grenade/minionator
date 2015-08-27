@@ -1,6 +1,7 @@
 package main
 
 import (
+  "github.com/fatih/color"
   "bytes"
   "fmt"
   "io/ioutil"
@@ -10,7 +11,7 @@ import (
 )
 
 func GetBug(id_or_alias string, cfg Config) Bug {
-  bzUrl := fmt.Sprint("http://", cfg.Bugzilla.Host, "/rest/bug/", id_or_alias, "?api_key=", cfg.Bugzilla.Key) 
+  bzUrl := fmt.Sprint("https://", cfg.Bugzilla.Host, "/rest/bug/", id_or_alias, "?api_key=", cfg.Bugzilla.Key) 
   req, err := http.NewRequest("GET", bzUrl, nil)
   req.Header.Set("Accept", "application/json")
   client := &http.Client{}
@@ -34,13 +35,14 @@ func GetBug(id_or_alias string, cfg Config) Bug {
   return Bug{}
 }
 
-func SetDepends(blocker int, depends int, comment string, cfg Config) {
-  bzUrl := fmt.Sprint("http://", cfg.Bugzilla.Host, "/rest/bug/", depends, "?api_key=", cfg.Bugzilla.Key)
+func SetDepends(blocker int, depends int, comment string, cfg Config) bool {
+  bzUrl := fmt.Sprint("https://", cfg.Bugzilla.Host, "/rest/bug/", depends, "?api_key=", cfg.Bugzilla.Key)
   message := ReOpenChildMessage {
     []int { depends },
     "REOPENED",
     DependsOnAppender { []int { blocker } },
-    Comment { "comment goes here", false, false } }
+    Comment { comment, false, false } }
+  //color.Cyan("request Payload: %+v", message)
   payload, err := json.Marshal(message)
   if err != nil {
     log.Fatal(err)
@@ -57,15 +59,23 @@ func SetDepends(blocker int, depends int, comment string, cfg Config) {
     log.Fatal(err)
   }
   defer resp.Body.Close()
+  body, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    log.Fatal(err)
+  }
   if resp.StatusCode == 200 {
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-      log.Fatal(err)
-    }
     var bugsApiResponse BugsApiResponse
     err = json.Unmarshal(body, &bugsApiResponse)
     if err != nil {
       log.Fatal(err)
     }
+    //color.Cyan("response Status: %v", resp.Status)
+    //color.Cyan("response Headers: %v", resp.Header)
+    //color.Cyan("response Body: %v", string(body))
+    return true
   }
+  color.Red("response Status: %v", resp.Status)
+  color.Red("response Headers: %v", resp.Header)
+  color.Red("response Body: %v", string(body))
+  return false
 }
