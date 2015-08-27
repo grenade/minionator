@@ -1,3 +1,6 @@
+[minionator]
+;task = OpenChildren # comment/uncomment to disable/enable task
+;task = CloseChildren # comment/uncomment to disable/enable task
 [bugzilla]
 host = bugzilla.mozilla.org
 key = YourBugzillaApiKey # https://bugzilla.mozilla.org/userprefs.cgi?tab=apikey
